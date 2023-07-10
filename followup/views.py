@@ -8,26 +8,25 @@ from .forms import LoginForm
 
 def login(request):
     if request.user.is_authenticated:
-        return render(request, 'followup/members.html')
+        return render(request, "followup/members.html")
 
-    elif request.method == 'POST':
+    elif request.method == "POST":
         form = LoginForm(request.POST)
         context = {"forms": form}
-        
+
         if form.is_valid():
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
+            username = form.cleaned_data["username"]
+            password = form.cleaned_data["password"]
             user = authenticate(request, username=username, password=password)
-            
+
             if user:
-                return render(request, 'followup/members.html', context)
-        
-        messages.error(request, f'Invalid username or password')
-        return render(request, 'followup/login.html', context)
-    
+                context = {"members": Member.objects.all()}
+                return render(request, "followup/members.html", context)
+
+        messages.error(request, f"Invalid username or password")
+        return render(request, "followup/login.html", context)
+
     else:
         form = LoginForm()
         context = {"forms": form}
-        return render(request, 'followup/login.html', context)
-        
-        
+        return render(request, "followup/login.html", context)
